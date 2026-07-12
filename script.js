@@ -46,3 +46,27 @@ rollBtn.addEventListener('click', () => {
       currentScore;
   }
 });
+
+holdBtn.addEventListener('click', () => {
+  // add current score to active player main score
+  scores[activePlayer] += currentScore;
+  document.querySelector(`#score--${activePlayer}`).textContent =
+    scores[activePlayer];
+
+  // check for possible winner
+  if (scores[activePlayer] >= 10) {
+    document.querySelector(`#name--${activePlayer}`).textContent = 'WINNER !';
+    rollBtn.classList.add('hidden');
+    holdBtn.classList.add('hidden');
+    diceEl.classList.add('hidden');
+  } else {
+    // switch player
+    currentScore = 0;
+    players[0].classList.toggle('player--active');
+    players[1].classList.toggle('player--active');
+    diceEl.classList.add('hidden');
+    document.querySelector(`#current--${activePlayer}`).textContent =
+      currentScore;
+    activePlayer === 0 ? (activePlayer = 1) : (activePlayer = 0);
+  }
+});
