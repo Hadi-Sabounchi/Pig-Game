@@ -11,15 +11,36 @@ const newBtn = document.querySelector('.btn--new');
 const holdBtn = document.querySelector('.btn--hold');
 
 // initial condition
-score0El.textContent = 0;
-score1El.textContent = 0;
-diceEl.classList.add('hidden');
+let scores, activePlayer, currentScore;
 
-const scores = [0, 0];
-let activePlayer = 0;
-let currentScore = 0;
+const gamePresets = function () {
+  scores = [0, 0];
+  activePlayer = 0;
+  currentScore = 0;
+  score0El.textContent = 0;
+  score1El.textContent = 0;
+  diceEl.classList.add('hidden');
+  rollBtn.classList.remove('hidden');
+  holdBtn.classList.remove('hidden');
+  players[activePlayer].classList.add('player--active');
+};
 
-// Dice rolling FN
+gamePresets();
+
+const switchPlayer = function () {
+  currentScore = 0;
+
+  players[0].classList.toggle('player--active');
+  players[1].classList.toggle('player--active');
+  diceEl.classList.add('hidden');
+  document.querySelector(`#current--${activePlayer}`).textContent =
+    currentScore;
+
+  activePlayer === 0 ? (activePlayer = 1) : (activePlayer = 0);
+};
+
+// ------  Dice rolling FN  ------
+
 rollBtn.addEventListener('click', () => {
   console.log(activePlayer);
   const diceNumber = Math.trunc(Math.random() * 6) + 1;
@@ -30,14 +51,7 @@ rollBtn.addEventListener('click', () => {
   // Game role for dice eq to one
   if (diceNumber === 1) {
     // switch player
-    currentScore = 0;
-    players[0].classList.toggle('player--active');
-    players[1].classList.toggle('player--active');
-    diceEl.classList.add('hidden');
-    document.querySelector(`#current--${activePlayer}`).textContent =
-      currentScore;
-
-    activePlayer === 0 ? (activePlayer = 1) : (activePlayer = 0);
+    switchPlayer();
   } else {
     // add diceNumber to current score of active player
     currentScore += diceNumber;
@@ -47,6 +61,8 @@ rollBtn.addEventListener('click', () => {
   }
 });
 
+// ------  hold score Btn FN  ------
+
 holdBtn.addEventListener('click', () => {
   // add current score to active player main score
   scores[activePlayer] += currentScore;
@@ -54,19 +70,24 @@ holdBtn.addEventListener('click', () => {
     scores[activePlayer];
 
   // check for possible winner
-  if (scores[activePlayer] >= 10) {
+  if (scores[activePlayer] >= 30) {
     document.querySelector(`#name--${activePlayer}`).textContent = 'WINNER !';
+    players[activePlayer].classList.add('player--winner');
+    players[activePlayer].classList.remove('player--active');
     rollBtn.classList.add('hidden');
     holdBtn.classList.add('hidden');
     diceEl.classList.add('hidden');
   } else {
     // switch player
-    currentScore = 0;
-    players[0].classList.toggle('player--active');
-    players[1].classList.toggle('player--active');
-    diceEl.classList.add('hidden');
-    document.querySelector(`#current--${activePlayer}`).textContent =
-      currentScore;
-    activePlayer === 0 ? (activePlayer = 1) : (activePlayer = 0);
+    switchPlayer();
   }
+});
+
+// ------  New Game Btn FN  ------
+
+newBtn.addEventListener('click', () => {
+  players[activePlayer].classList.remove('player--winner');
+  document.querySelector(`#name--${activePlayer}`).textContent =
+    `PLAYER ${activePlayer + 1}`;
+  gamePresets();
 });
